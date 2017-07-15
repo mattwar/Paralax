@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.4</TargetFramework>
+    <PackageId>Paralax.mattwar</PackageId>
+    <PackageVersion>1.0.0</PackageVersion>
+    <Authors>Matt Warren</Authors>
+    <Description>Text File Partitioner</Description>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
+    <Copyright>Copyright 2017 (c) Matt Warren. All rights reserved.</Copyright>
+    <PackageTags>Text Partition</PackageTags>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company>The Real Matt Warren</Company>
+    <PackageProjectUrl>https://github.com/mattwar/Paralax</PackageProjectUrl>    
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\Release\netstandard1.4\Paralax.xml</DocumentationFile>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard1.4\Paralax.xml</DocumentationFile>
+  </PropertyGroup>
+
+</Project>
