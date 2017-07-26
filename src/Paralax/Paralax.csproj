@@ -12,7 +12,8 @@
     <PackageTags>Text Partition</PackageTags>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Company>The Real Matt Warren</Company>
-    <PackageProjectUrl>https://github.com/mattwar/Paralax</PackageProjectUrl>    
+    <PackageProjectUrl>https://github.com/mattwar/Paralax</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/mattwar/Paralax/blob/master/LICENSE</PackageLicenseUrl>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

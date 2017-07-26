@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Paralax;
@@ -10,6 +11,134 @@ namespace ParalaxTests
     [TestClass]
     public class PartitionTests
     {
+        [TestMethod]
+        public void TestFilePartitions_2_UTF8()
+        {
+            TestFilePartitions(
+                "TestData.txt",
+                new[]
+                {
+                    new[] { "Line 1", "Line 2", "Line 3", "Line 4" },
+                    new[] { "Line 5", "Line 6", "Line 7", "Line 8" }
+                });
+        }
+
+        private void TestFilePartitions(string fileName, string[][] expected, Encoding encoding = null)
+        {
+            var streams = new Stream[expected.Length];
+            for (int i = 0; i < streams.Length; i++)
+            {
+                streams[i] = System.IO.File.OpenRead(fileName);
+            }
+
+            var readers = TextFilePartitioner.PartitionReaders(streams, encoding);
+            TestPartitionedReaders(readers, expected);
+        }
+
+        [TestMethod]
+        public void TestPartitionLines_2_UTF8()
+        {
+            // two partitions
+            TestPartitionLines(
+                "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8",
+                new[]
+                {
+                    new[] { "Line 1", "Line 2", "Line 3", "Line 4" },
+                    new[] { "Line 5", "Line 6", "Line 7", "Line 8" }
+                }, 
+                Encoding.UTF8);
+        }
+
+        [TestMethod]
+        public void TestPartitionLines_3_UTF8()
+        {
+            // three partitions
+            TestPartitionLines(
+                "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8",
+                new[]
+                {
+                    new[] { "Line 1", "Line 2", "Line 3" },
+                    new[] { "Line 4", "Line 5", "Line 6" },
+                    new[] { "Line 7", "Line 8"}
+                },
+                Encoding.UTF8);
+        }
+
+        [TestMethod]
+        public void TestPartitionLines_4_UTF8()
+        {
+            // three partitions
+            TestPartitionLines(
+                "Line 1\nLine 2\nLine 3\nLine 4\nLine 5\nLine 6\nLine 7\nLine 8",
+                new[]
+                {
+                    new[] { "Line 1", "Line 2" },
+                    new[] { "Line 3", "Line 4" },
+                    new[] { "Line 5", "Line 6" },
+                    new[] { "Line 7", "Line 8" }
+                },
+                Encoding.UTF8);
+        }
+
+        private void TestPartitionLines(string text, string[][] expected, Encoding encoding)
+        {
+            var readers = GetPartitionedReaders(text, expected.Length, encoding);
+            TestPartitionedReaders(readers, expected);
+        }
+
+        private void TestPartitionedReaders(TextReader[] readers, string[][] expected)
+        {
+            var actual = readers.Select(r => ReadLines(r)).ToArray();
+
+            for (int i = 0; i < expected.Length; i++)
+            {
+                var expectedLines = expected[i];
+                var actualLines = actual[i];
+                Assert.AreEqual(expectedLines.Length, actualLines.Length);
+
+                for (int j = 0; j < expectedLines.Length; j++)
+                {
+                    Assert.AreEqual(expectedLines[j], actualLines[j]);
+                }
+            }
+        }
+
+        private string[] ReadLines(TextReader reader)
+        {
+            var list = new List<string>();
+
+            while (true)
+            {
+                var line = reader.ReadLine();
+                if (line == null)
+                    break;
+                list.Add(line);
+            }
+
+            return list.ToArray();
+        }
+
+        private TextReader[] GetPartitionedReaders(string text, int partitions, Encoding encoding)
+        {
+            var ms = new MemoryStream();
+            var writer = new StreamWriter(ms, encoding, bufferSize: 1024, leaveOpen: true);
+            writer.Write(text);
+            writer.Close();
+
+            ms.Position = 0;
+            var bytes = ms.ToArray();
+
+            var streams = new Stream[partitions];
+            for (int i = 0; i < partitions; i++)
+            {
+                streams[i] = new MemoryStream(bytes);
+            }
+
+            return TextFilePartitioner.PartitionReaders(streams, encoding);
+        }
+
+
+
         [TestMethod]
         public void TestPartitionStarts()
         {

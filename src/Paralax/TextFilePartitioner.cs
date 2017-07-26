@@ -123,7 +123,7 @@ namespace Paralax
         private static Encoding GetEncoding(Stream stream)
         {
             stream.Position = 0;
-            var encoding = new StreamReader(stream, encoding: null, detectEncodingFromByteOrderMarks: true, bufferSize: 32, leaveOpen: true).CurrentEncoding;
+            var encoding = new StreamReader(stream).CurrentEncoding;
             stream.Position = 0;
             return encoding;
         }
